@@ -1,0 +1,60 @@
+keykaren: Read repo_metadata.jsonl line by line, extract the repo field, group all records with the same repo into a JSONL file, save them in a folder using the repo name with / replaced by __.
+
+GitHub Copilot: Ran terminal command: $ErrorActionPreference = 'Stop';
+$inputPath = 'd:\Downloads\1\raptor-secondary\v-lkan_25_12_04_easy_case1\repo_metadata.jsonl';
+if (-not (Test-Path $inputPath)) { throw "Input file not found: $inputPath" }
+$root = Split-Path $inputPath;
+Get-Content -LiteralPath $inputPath | ForEach-Object {
+    if (-not $_) { return }
+    $obj = $_ | ConvertFrom-Json
+    $repo = $obj.repo
+    if (-not $repo) { return }
+    $san = $repo -replace '/', '__'
+    $dir = Join-Path $root $san
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
+    $outFile = Join-Path $dir 'repo_metadata.jsonl'
+    Add-Content -LiteralPath $outFile -Value $_ -Encoding UTF8
+}
+Write-Host 'Done.'
+
+Checked background terminal output
+
+Read [](file:///d%3A/Downloads/1/raptor-secondary/v-lkan_25_12_04_easy_case1)
+
+Read [](file:///d%3A/Downloads/1/raptor-secondary/v-lkan_25_12_04_easy_case1/jtroo__kanata/repo_metadata.jsonl)
+
+Read [](file:///d%3A/Downloads/1/raptor-secondary/v-lkan_25_12_04_easy_case1/RustPython__RustPython/repo_metadata.jsonl)
+
+## ✅ Grouping Complete
+
+- Processed repo_metadata.jsonl and grouped entries by `repo`.
+- For each unique repo, created a sanitized folder (`/` → `__`) and wrote its records to repo_metadata.jsonl inside.
+
+---
+
+## 📁 Output Structure
+
+| Repo | Folder | JSONL Path |
+| --- | --- | --- |
+| `jtroo/kanata` | `jtroo__kanata/` | repo_metadata.jsonl |
+| `astral-sh/uv` | `astral-sh__uv/` | repo_metadata.jsonl |
+| `reacherhq/check-if-email-exists` | `reacherhq__check-if-email-exists/` | repo_metadata.jsonl |
+| `uutils/coreutils` | `uutils__coreutils/` | repo_metadata.jsonl |
+| `RustPython/RustPython` | `RustPython__RustPython/` | repo_metadata.jsonl |
+| `starship/starship` | `starship__starship/` | repo_metadata.jsonl |
+| `hatoo/oha` | `hatoo__oha/` | repo_metadata.jsonl |
+| `ogham/exa` | `ogham__exa/` | repo_metadata.jsonl |
+| `mfontanini/presenterm` | `mfontanini__presenterm/` | repo_metadata.jsonl |
+
+> Root directory: v-lkan_25_12_04_easy_case1
+
+---
+
+## 🔧 Notes
+
+- Files are UTF-8 encoded JSONL, preserving original lines.
+- Repos with multiple entries (e.g., `RustPython/RustPython`) contain all their records in the same file.
+
+---
+
+**Done.**
